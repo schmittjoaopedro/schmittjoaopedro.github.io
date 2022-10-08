@@ -53,3 +53,6 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+# Google analytics GTAG only applies for minima theme
+google_analytics: "G-QTQHN7YGF9"
