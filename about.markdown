@@ -4,15 +4,15 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+Hello,
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+My name is Joao Pedro Schmitt and I'm a Software Engineering with experience in back-end and optimization systems.
+I started my carrer in 2012 as an IT help-desk and evolved to become a Cloud Engineer at Critical Techworks | BMW Group.
+I love working with technology and science, my main areas of interest are robotics, distributed systems, combinatorial optimization, computer science, and algorithms.
+As a hobby I like to conduct personal projects to learn new skills, share my experience as a developer this far, and sometimes contribute to some open-source projects.
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+You can find more about me in the following means:
 
-
-[jekyll-organization]: https://github.com/jekyll
+* E-mail: schmittjoaopedro@gmail.com
+* LinkedIn: https://www.linkedin.com/in/joao-pedro-schmitt-60847470/
+* GitHub: https://github.com/schmittjoaopedro
