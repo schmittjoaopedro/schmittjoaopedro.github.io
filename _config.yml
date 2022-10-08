@@ -55,4 +55,4 @@ plugins:
 #   - vendor/ruby/
 
 # Google analytics GTAG only applies for minima theme
-google_analytics: G-QTQHN7YGF9
+google_analytics: "G-QTQHN7YGF9"
