@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Joao Pedro Schmitt
+title: About
 permalink: /about/
 ---
 
