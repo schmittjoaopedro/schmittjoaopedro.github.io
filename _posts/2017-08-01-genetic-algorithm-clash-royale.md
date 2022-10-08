@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Automated Testing in Java and Node JS with Selenium and ExtJS 6.5"
-date:   2017-09-05 12:00:00 +0100
+title:  "Genetic algorithm for optimization applied in game strategies. "
+date:   2017-08-01 12:00:00 +0100
 categories: jekyll update
 ---
 
