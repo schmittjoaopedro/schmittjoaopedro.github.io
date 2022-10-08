@@ -9,7 +9,7 @@ categories: jekyll update
 
 Data Science is an interdisciplinary field that deal with methods, processes and systems for extracting knowledge contained in structured or unstructured data. The data mining process usually depends of a series of steps, the image below shows the standard path that a data scientist usually take.
 
-![Data visualization process](imgs/data_visualization_process_v1.png)
+![Data visualization process](/assets/imgs/data_visualization_process_v1.png)
 
 At each step of the Data Science process, several activities are required, eg: choice of models and mining algorithms, communication modes for presentation of results, forms of collection, exploratory analysis, pre-processing, etc.
 
