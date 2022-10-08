@@ -5,6 +5,13 @@ Reference: https://jekyllrb.com/docs/installation/ubuntu/
 # Testing the site locally
 
 ```shell
-bundle install
-bundle exec jekyll serve
+./run-test.sh
+```
+
+# Publishing
+
+```shell
+git add .
+git commit -m 'add content to blog'
+git push -u origin gh-pages
 ```
