@@ -63,7 +63,7 @@ The fitness function of the algorithm performs for each cloned arena a separate 
 
 We can see in the video below an example of simulation of the algorithm in practice, the blue player is using the genetic algorithm while the red player is using a random logic (baseline).
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=fcrzux2yaJk" target="_blank"><img src="https://img.youtube.com/vi/fcrzux2yaJk/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=fcrzux2yaJk" target="_blank"><img src="https://img.youtube.com/vi/fcrzux2yaJk/0.jpg" alt="IMAGE ALT TEXT HERE" width="612" height="459" border="10" /></a>
 
 ## References
 
