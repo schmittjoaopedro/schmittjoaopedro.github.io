@@ -1,1 +1,0 @@
-# schmittjoaopedro.github.io
