@@ -29,7 +29,7 @@ The keys exhaustion began when the system started to be more extensively used. T
 The following diagram depicts the general system architecture. The system was composed of various Web Application nodes processing business transactions (reading and writing to the OLTP DB). There was also a reporting/analytical database used for ETL transformation and report generation. And finally, there was an online synchronized high-availability disaster recovery replica to the main table for fault tolerance.
 
 Diagram 1: Application Architecture Diagram
-![Table schema](table-schema.png)
+![Table schema](/assets/imgs/table-schema.png)
 
 ### Constraints
 
