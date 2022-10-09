@@ -13,3 +13,6 @@ I love working with technology and science, my main areas of interest are roboti
 As a hobby I like to conduct personal projects to learn new skills, share my experience as a developer this far, and sometimes contribute to some open-source projects.
 
 You can find more about me by [e-mail](mailto:schmittjoaopedro@gmail.com), [LinkedIn](https://www.linkedin.com/in/joao-pedro-schmitt-60847470/), or [GitHub](https://github.com/schmittjoaopedro)
+
+
+<div style="text-align:left;"><img style="width: 200px;" src="/assets/imgs/2640413.png" /></div>
