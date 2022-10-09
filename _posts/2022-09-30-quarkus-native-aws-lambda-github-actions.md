@@ -237,6 +237,7 @@ Resources:
 Finally, let's create the GitHub Actions workflow to deploy everything as per the sequence mentioned above. Create the file `.github/workflows/deploy.yaml` at the project's root directory with the following content:
 
 ```yaml
+{% raw %}
 name: Deploy Lambda Function
 
 on:
@@ -302,6 +303,7 @@ jobs:
             response.json
           
           cat response.json
+{% endraw %}
 ```
 
 As you can see in the `deploy.yaml` file, the first three steps are used to checkout the source code, configure AWS credentials and set up the GraalVM. Next, we build the Native Image and finally we run a series of commands to accomplish the sequence of 6 actions defined at the beginning of this section.
