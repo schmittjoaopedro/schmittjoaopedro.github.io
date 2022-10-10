@@ -14,6 +14,7 @@ SEA2 (Special Event on Analysis of Experimental Algorithms) is an international 
 Paper abstract:
 > Vehicle routing problems require efficient computational solutions to reduce operational costs. Therefore, this paper presents a benchmark analysis of Max-Min Ant System (MMAS) combined with local search applied to the Asymmetric and Dynamic Travelling Salesman Problem with Moving Vehicle (ADTSPMV). Different from the well known ADTSP, in the moving vehicle scenario the optimization algorithm continues to improve the TSP solution while the vehicle is visiting the clients. The challenge of this scenario is mainly concerned with the fulfilment of hard time restrictions. In this study we evaluate how MMAS performs combined with US local search, 3-opt local search, and a memory mechanism. Besides that, we demonstrate how to model the moving vehicle restrictions under the MMAS algorithm. To perform the benchmark analysis instances from TSBLIB were selected. The dynamism was emulated by means of changes in traffic factors. The results indicate that for ADTSP the MMAS-US is the best algorithm while for ADTSPMV the MMAS-3opt is the most suitable.
 
+The project details can be found [here](https://github.com/schmittjoaopedro/mmas-ls-adtspmv).
 Project folder structure:
 * `src/main/java/com/github/schmittjoaopedro/tsp/algorithms` - contains the algorithms evaluated in the paper.
 * `src/main/java/com/github/schmittjoaopedro/tsp/aco` - contains the MMAX implementation.
