@@ -10,6 +10,7 @@ https://schmittjoaopedro.github.io/jekyll/update/2019/01/01/solvar-custom-data-i
 https://schmittjoaopedro.github.io/jekyll/update/2018/12/07/analysis-solr-load.html
 https://schmittjoaopedro.github.io/jekyll/update/2018/10/27/a-method-to-suggested-alternative-routes.html
 https://schmittjoaopedro.github.io/jekyll/update/2018/10/26/mmas-mem.html
+https://schmittjoaopedro.github.io/jekyll/update/2018/10/17/rsa-analysis.html
 https://schmittjoaopedro.github.io/jekyll/update/2018/03/03/java-word-template-filler.html
 https://schmittjoaopedro.github.io/jekyll/update/2018/03/01/memory-class-compiler.html
 https://schmittjoaopedro.github.io/jekyll/update/2018/01/01/spring-boot-redis-neo4j.html
