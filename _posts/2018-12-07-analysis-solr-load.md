@@ -90,19 +90,19 @@ In the SOLR Cloud, the Zookeeper is used to keep the servers synchronized. The o
 
 To start the Zookeeper at least three servers must be up. This configuration guarantee that sufficient servers will be available to create redundancy. In this article, a single server was used for validation purposes, but in real scenarios is important to consider the indications of the fabricant. To configure zookeeper for our tests, in the Zookeeper installation directory we had renamed the file zoo_sample.cfg to zoo.cfg, and after that, we started the Zookeeper with:
 
-```powershell
+```shell
 zookeeper_dir > cd bin zookeeper_dir > zkServer.cmd
 ```
 
 After that, we downloaded the SOLR servers and unzipped them in a specific directory. Then we copied the solr.xml file to zookeeper using the following command:
 
-```powershell
+```shell
 solr_dir > bin\solr zk cp file:E:\solr\solr-7.3.1\server\solr\solr.xml zk:/solr.xml -z localhost:2181
 ```
 
 This command will share in zookeeper the solr.xml configuration file. By this way, the new nodes that enter in the cluster will obtain the configuration file from zookeeper. After that, was copied the collection files to zookeeper. This files will be used as template by the new nodes that enter in the cluster.
 
-```powershell
+```shell
 solr_dir > bin\solr zk upconfig -n your-solr-project -d C:\projetos\solr7\your-solr-projects -z localhost:2181
 ```
 
