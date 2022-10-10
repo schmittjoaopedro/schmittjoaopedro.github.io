@@ -69,6 +69,8 @@ We can conclude that the meta-heuristics are very useful to solve very complex p
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=q11W1ZERSYk" target="_blank"><img src="https://img.youtube.com/vi/q11W1ZERSYk/0.jpg" alt="ACO for TSP in Java" width="612" height="459" border="10" /></a>
 
+More details about the project can be found [here](https://github.com/schmittjoaopedro/aco-tsp-java).
+
 ## References
 
 [TSP Library](https://www.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/)

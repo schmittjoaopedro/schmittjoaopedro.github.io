@@ -9,6 +9,8 @@ categories: jekyll update
 
 Companies are every time demanding more automation tools for documents generation, these tools are used to speed up contracts generation and client documentation. To support this necessity, tools like Word have been widely used and integrated with different technologies to fill data in template files. In this context, the Java programming language combined with the library DOCX4J allow, by programming, to generate Word documents filled with data from XML files. However, besides the extensive library documentation and community support available on the internet, there is still a lack for simple guides, and this article proposes to offer a very simple guide (step-by-step) to generate Word documents using the DOCX4J library.
 
+This project is also available [here](https://github.com/schmittjoaopedro/java-word-template-filler).
+
 ## Guide to generate Word files with Java
 
 Word documents generation is based on XML source files. In this example, the XML structure used to fill the Word template is presented below:

@@ -47,25 +47,25 @@ clientPort=2181
 
 The zookeeper configuration is ready. Thus, open a new terminal window and go to the zookeeper bin directory.
 
-```powershell
+```cmd
 cd C:\solr\zookeeper-3.4.13\bin
 ```
 
 Now start the zookeeper server. In this case, the zookeeper will be started at 2181 port.
 
-```powershell
+```cmd
 zkServer.cmd
 ```
 
 Now, to check if the zookeeper is up and working properly, open a new terminal session and go to the zookeeper bin directory again. Then start the zookeeper client with the following command:
 
-```powershell
+```cmd
 zkCli.cmd
 ```
 
 If everything is working, the connection with zookeeper will be opened successfully and you will view something like this:
 
-```powershell
+```cmd
 …
 WATCHER::
 
@@ -76,7 +76,7 @@ WatchedEvent state:SyncConnected type:None path:null
 
 Now, you have access to the zookeeper virtual directory. For example, type the following command to list the root zookeeper directory.
 
-```powershell
+```cmd
 [zk: localhost:2181(CONNECTED) 0] ls /
 [zookeeper]
 ```
@@ -91,21 +91,21 @@ Solr is the popular, blazing-fast, open source enterprise search platform built 
 
 The first thing to do is configure SOLR with an isolated zookeeper server instance. Therefore, first upload the solr.xml to the zookeeper directory. This is made with the following command executed under the Solr dir:
 
-```powershell
+```cmd
 C:\solr\solr-7.3.0> bin\solr zk cp file:C:\solr\solr-7.3.0\server\solr\solr.xml zk:/solr.xml -z localhost:2181
-Copying from ‘file:C:\solr\solr-7.3.0\server\solr\solr.xml’ to ‘zk:/solr.xml’. ZooKeeper at localhost:2181
+Copying from 'file:C:\solr\solr-7.3.0\server\solr\solr.xml' to 'zk:/solr.xml'. ZooKeeper at localhost:2181
 ```
 
 After that, the configsets need to be uploaded to the zookeeper. The configsets are the schemas definition to create collections. There are some different ways to upload these files to zookeeper. One of that is starting a Solr server that upload this files automatically and one other is uploading these files manually. In this case, we will upload this files manually with the following command:
 
-```powershell
+```cmd
 C:\solr\solr-7.3.0> bin\solr zk upconfig -n _default -d C:\solr\solr-7.3.0\server\solr\configsets\_default -z localhost:2181
 Uploading C:\solr\solr-7.3.0\server\solr\configsets\_default\conf for config _default to ZooKeeper at localhost:2181
 ```
 
 We can check if everything is right executing the following commands in the zookeeper client:
 
-```powershell
+```cmd
 [zk: localhost:2181(CONNECTED) 1] ls /
 [solr.xml, configs, zookeeper]
 [zk: localhost:2181(CONNECTED) 5] ls /configs
@@ -133,37 +133,37 @@ To start more than one server in the PC 1, a custom log configuration is necessa
 
 To start the nodes, before is necessary to change the environment variables to point properly for the log folders. First, execute the following command to define the log configuration file:
 
-```powershell
+```cmd
 set LOG4J_CONFIG=file:C:\solr\solr_cloud\resources\log4j.properties
 ```
 
 Then change the server log directory:
 
-```powershell
+```cmd
 set SOLR_LOGS_DIR=C:\solr\solr_cloud\cloud\node1\logs
 ```
 
 Then start the first SOLR node. In this case, the -z parameter indicates the zookeeper, -s the Solr directory, -c the cloud mode and -p the server port.
 
-```powershell
+```cmd
 bin\solr start -c -p 8983 -s "C:/solr/solr_cloud/cloud/node1/solr" -z localhost:2181
 ```
 
 Then start the second node. First, change the log directory to node 2:
 
-```powershell
+```cmd
 set SOLR_LOGS_DIR=C:\solr\solr_cloud\cloud\node2\logs
 ```
 
 Then start the node 2 server in a new port:
 
-```powershell
+```cmd
 bin\solr start -c -p 8984 -s "C:/solr/solr_cloud/cloud/node2/solr" -z localhost:2181
 ```
 
 To configure the PC 2, execute the same steps to configure the Solr server. But now change the -z parameter to appoint to the IP of the zookeeper computer.
 
-```powershell
+```cmd
 set LOG4J_CONFIG=file:C:\solr\solr_cloud\resources\log4j.properties
 set SOLR_LOGS_DIR=C:\solr\solr_cloud\cloud\node1\logs
 bin\solr start -c -p 8983 -s "C:/solr/solr_cloud/cloud/node1/solr" -z 192.168.2.6:2181
@@ -180,7 +180,7 @@ If everything is right the servers should be accessible at the URLs:
 
 Or checking in the zookeeper client the active nodes:
 
-```powershell
+```cmd
 [zk: localhost:2181(CONNECTED) 8] ls /live_nodes
 [192.168.2.5:8983_solr, 192.168.2.6:8983_solr, 192.168.2.6:8984_solr, 192.168.2.5:8984_solr]
 ```
@@ -189,13 +189,13 @@ Or checking in the zookeeper client the active nodes:
 
 To create a Solr cloud collection, execute the following command:
 
-```powershell
+```cmd
 bin\solr create -c sample_project -s 4 -rf 2 -d _default -n _default
 ```
 
 This command will create a new core named sample_project (param -c), with the config _default (param -d) using the existing config _default from zookeeper(param -n). The parameter -s define the number of shards, that is, the number of chunks that Solr will use to segment the index. And the parameter -rf define the replication factor, that is the number of copies available for each shard. The replication factor is used as a failover mechanism in case of failures. To validate that everything is right, we can check in zookeeper the status with the following command:
 
-```powershell
+```cmd
 [zk: localhost:2181(CONNECTED) 12] ls /collections
 [sample_project]
 ```

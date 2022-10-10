@@ -90,23 +90,23 @@ In the SOLR Cloud, the Zookeeper is used to keep the servers synchronized. The o
 
 To start the Zookeeper at least three servers must be up. This configuration guarantee that sufficient servers will be available to create redundancy. In this article, a single server was used for validation purposes, but in real scenarios is important to consider the indications of the fabricant. To configure zookeeper for our tests, in the Zookeeper installation directory we had renamed the file zoo_sample.cfg to zoo.cfg, and after that, we started the Zookeeper with:
 
-```shell
+```powershell
 zookeeper_dir > cd bin zookeeper_dir > zkServer.cmd
 ```
 
 After that, we downloaded the SOLR servers and unzipped them in a specific directory. Then we copied the solr.xml file to zookeeper using the following command:
 
-```shell
+```powershell
 solr_dir > bin\solr zk cp file:E:\solr\solr-7.3.1\server\solr\solr.xml zk:/solr.xml -z localhost:2181
 ```
 
 This command will share in zookeeper the solr.xml configuration file. By this way, the new nodes that enter in the cluster will obtain the configuration file from zookeeper. After that, was copied the collection files to zookeeper. This files will be used as template by the new nodes that enter in the cluster.
 
-```shell
+```powershell
 solr_dir > bin\solr zk upconfig -n your-solr-project -d C:\projetos\solr7\your-solr-projects -z localhost:2181
 ```
 
-To execute this tests two personal computers were used. In each computer, two SOLR instances were created to make a cluster with four nodes. More details about the SOLR initialization and configuration are available in the following tutorial: [SOLR COULD + ZOOKEEPER + WINDOWS](https://joaoschmitt.wordpress.com/2018/07/21/solr-cloud-zookeeper-windows/).
+To execute this tests two personal computers were used. In each computer, two SOLR instances were created to make a cluster with four nodes. More details about the SOLR initialization and configuration are available in the following tutorial: [SOLR COULD + ZOOKEEPER + WINDOWS](https://schmittjoaopedro.github.io/jekyll/update/2018/07/21/solr-cloud-zookeper-windowns.html).
 
 To create the test database, JSON files with around 28 kb of size were used, these files don’t have any kind of binary data. To load the files to the SOLR instances the following code, using the spring-data API, was used:
 
