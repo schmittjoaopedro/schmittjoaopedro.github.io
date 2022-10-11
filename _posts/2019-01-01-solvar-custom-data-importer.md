@@ -36,14 +36,14 @@ cd server\solr\solr-custom-data-indexer-core
 mkdir lib
 ```
 
-Download and copy the data import handler jar [solr-dataimporterhandler-7.6.0](solr-configuration/lib/solr-dataimporthandler-7.6.0.jar) to the lib folder.
+Download and copy the data import handler jar [solr-dataimporterhandler-7.6.0](https://github.com/schmittjoaopedro/custom-solr-indexer/raw/main/solr-custom-data-indexer-core/lib/solr-dataimporthandler-7.6.0.jar) to the lib folder.
 This jar is available in the *dist* folder of SOLR project.
 The classes inside this jar are used by our custom indexer to extend the SOLR API.
 
 ### Configuring Managed Schema
 
 As we are simulating here an example scenario, the data is not real (company and employee).
-The data used here is available on the [assets ](assets) folder of this [GIT](https://github.com/schmittjoaopedro/joaoschmitt.wordpress.com/tree/master/custom-solr-data-indexer) repo.
+The data used here is available on the [assets ](https://github.com/schmittjoaopedro/custom-solr-indexer/tree/main/assets) folder of this [GIT](https://github.com/schmittjoaopedro/custom-solr-indexer) repo.
 The dataset used here contains a relationship between employees with departments (given the foreign key *companyId* field).
 To persist this data in our SOLR core, first is necessary to configure the *managed-schema* file, therefore add the following entries at the *managed-schema* file after the id entry.
 
@@ -110,7 +110,7 @@ The processor tag is modified to indicate our custom classes that will handle th
 </dataConfig>
 ```
 
-The full SOLR core configuration is available in this [link](https://github.com/schmittjoaopedro/joaoschmitt.wordpress.com/tree/master/custom-solr-data-indexer/solr-custom-data-indexer-core).
+The full SOLR core configuration is available in this [link](https://github.com/schmittjoaopedro/custom-solr-indexer/tree/main/solr-custom-data-indexer-core).
 
 ## Java project
 
@@ -198,7 +198,7 @@ Then add the following plugin to the *pom.xml* file.
 
 ### Data structure
 
-The dataset used to simulate ou custom extension is available in the [assets](https://github.com/schmittjoaopedro/joaoschmitt.wordpress.com/tree/master/custom-solr-data-indexer/assets) link.
+The dataset used to simulate ou custom extension is available in the [assets](https://github.com/schmittjoaopedro/custom-solr-indexer/tree/main/assets) link.
 The assets folder contains the *company_v1_full* and *company_v2_full* files, that simulate the database of companies in version one and two.
 Besides that, in our *assets* folder, the employee is organized in the same way, where *employee_v1_full* and *employee_v2_full* contains the full database in version one and two, while file *employee_v2_modified* contains the created/updated delta between version one and two and the file *employee_v2_removed* contains the removed entries. 
 
@@ -383,7 +383,7 @@ public class CompanyProcessor extends EntityProcessorBase {
 }
 ```
 
-More details about this implementation are available in the project on [GitHub](https://github.com/schmittjoaopedro/joaoschmitt.wordpress.com/tree/master/custom-solr-data-indexer).
+More details about this implementation are available in the project on [GitHub](https://github.com/schmittjoaopedro/custom-solr-indexer).
 
 
 #### Executing custom jar on SOLR

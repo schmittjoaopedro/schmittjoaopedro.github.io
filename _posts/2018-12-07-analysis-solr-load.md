@@ -106,7 +106,7 @@ This command will share in zookeeper the solr.xml configuration file. By this wa
 solr_dir > bin\solr zk upconfig -n your-solr-project -d C:\projetos\solr7\your-solr-projects -z localhost:2181
 ```
 
-To execute this tests two personal computers were used. In each computer, two SOLR instances were created to make a cluster with four nodes. More details about the SOLR initialization and configuration are available in the following tutorial: [SOLR COULD + ZOOKEEPER + WINDOWS](https://joaoschmitt.wordpress.com/2018/07/21/solr-cloud-zookeeper-windows/).
+To execute this tests two personal computers were used. In each computer, two SOLR instances were created to make a cluster with four nodes. More details about the SOLR initialization and configuration are available in the following tutorial: [SOLR COULD + ZOOKEEPER + WINDOWS](https://schmittjoaopedro.github.io/jekyll/update/2018/07/21/solr-cloud-zookeper-windowns.html).
 
 To create the test database, JSON files with around 28 kb of size were used, these files don’t have any kind of binary data. To load the files to the SOLR instances the following code, using the spring-data API, was used:
 

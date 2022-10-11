@@ -8,6 +8,8 @@ categories: jekyll update
 ## Introduction
 In software testing, an automated test is the use of special software to control the execution of tests and compare current results with expected results. Test automation serves to perform repetitive but necessary tasks in a formalized test process, and / or perform some additional activity that can be difficult to execute by a manual process. Automated testing is critical to continuous delivery and continuous testing processes.
 
+You can find more details [here](https://github.com/schmittjoaopedro/selenium-extjs-6.5).
+
 ## Selenium
 The [Selenium](http://www.seleniumhq.org/) tool perform the automation of browsers. It serves to automate WEB applications for the purpose of testing, but not limited to this, it can also automate repetitive and boring activities. The Selenium tool is supported by the main browsers, and vendors make the effort to keep the tool drivers as a native part of their browsers. In addition, it serves as an intrinsic part of several APIs and Frameworks for browser automation.
 

@@ -10,6 +10,7 @@ categories: jekyll update
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/047d4f14540448e5a20b8548e732ec38)](https://www.codacy.com/manual/schmittjoaopedro/mcc?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=schmittjoaopedro/mcc&amp;utm_campaign=Badge_Grade)
 
 The Memory Class Compiler (MCC) is a simple Java library used to compile Java classes at runtime.
+The project is also available [here](https://github.com/schmittjoaopedro/mcc).
 
 ## Purpose
 
