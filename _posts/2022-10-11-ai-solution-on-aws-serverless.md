@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "[WIP] Architecting an AI solution on AWS serverless"
-date:   2022-10-11 12:00:00 +0100
+title:  "Architecting an AI solution on AWS serverless"
+date:   2022-10-10 12:00:00 +0100
 categories: jekyll update
 ---
 {% include math-formatter.html %}
@@ -214,7 +214,9 @@ Resources:
 
 In terms of GitHub Actions workflow configurations, for all repositories a `.github/workflows/deploy.yaml` file was created containing the following base structure. Then, for each repository specific build steps were added accordingly to their tech-stack.
 
+
 ```yaml
+{% raw %}
 name: <repository name>
 
 on:
@@ -244,6 +246,7 @@ jobs:
           role-session-name: GitHub-Action-Role
           aws-region: ${{ env.AWS_REGION }}
       - name: build steps specific for each project
+{% endraw %}
 ```
 
 All repositories were configured in a way that any code change pushed would fire the build and deploy process.
@@ -251,6 +254,7 @@ Besides that, `aws-cloud-infrastructure` repository was configured to be the lea
 For example, the following code snippet from `aws-cloud-infrastructure` shows that everytime the route-stack changes (when `CHANGES_APPLIED == '1'`) then the downstream `aws-route-lambda` repository workflow is dispatched to re-deploy its service.
 
 ```yaml
+{% raw %}
 ...
 jobs:
   deploy-stack:
@@ -278,6 +282,7 @@ jobs:
               ref: 'main'
             })
       ...
+{% endraw %}
 ```
 
 From the previous snippet, the environment variable `CHANGES_APPLIED` is set by the script `cf-routes-stack.sh` that identifies a stack modification based on the result of the CloudFormation command. The following snippet shows the details:
@@ -321,6 +326,7 @@ The following snippet show details about the required dependencies:
 To integrate Amplify, React, and Cognito, the following configuration was made as part of the `App.js` file:
 
 ```javascript
+{% raw %}
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import Amplify, { Auth, Hub } from 'aws-amplify';
@@ -387,6 +393,7 @@ function App() {
     );
 }
 export default App;
+{% endraw %}
 ```
 
 Therefore, with this global `Auth` object we were able to get user credentials to make all HTTP requests and send the JWT token as part of the authorization header.
