@@ -1,4 +1,9 @@
-# Architecting an AI solution on AWS serverless
+---
+layout: post
+title:  "[WIP] Architecting an AI solution on AWS serverless"
+date:   2022-10-11 12:00:00 +0100
+categories: jekyll update
+---
 
 ## Motivation
 
