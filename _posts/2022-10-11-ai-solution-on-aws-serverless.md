@@ -295,11 +295,115 @@ exit 0
 ```
 
 ### Authorisation
-- Cognito configuration
-- Idp with Google
-- User Pool
-- Front-end Amplify configuration
-- Sing up front-end
+
+As mentioned previously Cognito was used as provider for authentication and authorization.
+The User Poll was configured to allow signup through a local account or through an external identity provider (in this case Google).
+To facilitate the front-end development, a custom oauth domain `oauth.joaopedroschmitt.click` was configured through Route53 and Cognito User Pool CloudFront distribution.
+Some issues were found during the creation of the custom domain through CloudFormation, it was not possible to automatically get the CloudFront domain (more details [here](https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/241) and [here](https://gist.github.com/grosscol/3623d2c2affdd3b88ed4538537bb0850)).
+
+The React front-end was developed using the Amplify library, an AWS provided implementation that integrates well with Cognito. 
+The following snippet show details about the required dependencies:
+
+```json
+{
+  ...
+  "dependencies": {
+    "@aws-amplify/ui-react": "^2.6.1",
+    "aws-amplify": "^4.3.14",
+    ...
+  },
+  ...
+}
+
+```
+
+To integrate Amplify, React, and Cognito, the following configuration was made as part of the `App.js` file:
+
+```javascript
+import './App.css';
+import React, { useEffect, useState } from 'react';
+import Amplify, { Auth, Hub } from 'aws-amplify';
+...
+const isLocalhost = window.location.hostname.includes("localhost");
+
+Amplify.configure({
+    Auth: {
+        region: `${process.env.REACT_APP_AWS_OAUTH_REGION}`,
+        userPoolId: `${process.env.REACT_APP_AWS_OAUTH_USERPOOLID}`,
+        userPoolWebClientId: `${process.env.REACT_APP_AWS_OAUTH_USERPOOLWEBCLIENTID}`,
+        identityPoolId: `${process.env.REACT_APP_AWS_OAUTH_IDENTITYPOOLID}`,
+        oauth: {
+            domain: 'oauth.joaopedroschmitt.click',
+            scope: [
+                'phone',
+                'email',
+                'profile',
+                'openid',
+                'aws.cognito.signin.user.admin',
+                'api.joaopedroschmitt.click/addresses.read',
+                'api.joaopedroschmitt.click/routes.read',
+                'api.joaopedroschmitt.click/routes.write'
+            ],
+            redirectSignIn: isLocalhost ? 'http://localhost:3000' : 'https://joaopedroschmitt.click',
+            redirectSignOut: isLocalhost ? 'http://localhost:3000' : 'https://joaopedroschmitt.click',
+            responseType: 'code'
+        }
+    }
+});
+
+function App() {
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        const unsubscribe = Hub.listen("auth", ({ payload: { event, data } }) => {
+            switch (event) {
+                case "signIn":
+                    setUser(data);
+                    break;
+                case "signOut":
+                    setUser(null);
+                    break;
+                default:
+                    break;
+            }
+        });
+        Auth.currentAuthenticatedUser()
+            .then(currentUser => setUser(currentUser))
+            .catch(() => console.log("Not signed in"));
+        return unsubscribe;
+    }, []);
+
+    return (
+        <Layout style={{ minHeight: "100vh" }}>
+            <NavBar
+                isLogged={!!user}
+                email={user?.attributes?.email}
+                signIn={() => Auth.federatedSignIn()}
+                signOut={() => Auth.signOut()}>
+                ...
+            </NavBar>
+            ...
+        </Layout>
+    );
+}
+export default App;
+```
+
+Therefore, with this global `Auth` object we were able to get user credentials to make all HTTP requests and send the JWT token as part of the authorization header.
+You can see an example at the snippet below:
+
+```javascript
+Auth.currentSession().then(res =>
+  fetch(`https://api.joaopedroschmitt.click/routes/create`, {
+      method: 'POST',
+      headers: {
+          ...
+          "Authorization": res.getAccessToken().getJwtToken()
+      },
+      body: JSON.stringify(routeDTO)
+  })
+  ...
+```
+
 ### Address back-end
 - Example of request and response
 - Requirement for nodejs
