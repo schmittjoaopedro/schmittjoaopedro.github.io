@@ -17,7 +17,7 @@ On the left there's the problem, a set of customers spread across the map that h
 On the right there's the solution for the problem, it consists of a set of routes (a.k.a. itineraries) assigned to a fleet of vehicles that will deliver the goods to the customers on time.
 The VRP problem's challenge is about how to find the best itineraries to minimize (or maximize) a specific KPI (e.g.: total travel time, total gas consumption, total delays, profit, etc) $^2$.
 
-![vehicle Routing Problem Example](imgs/vehicle-routing-problem.png)
+![vehicle Routing Problem Example](/assets/imgs/vehicle-routing-problem.png)
 
 ### Why is Vehicle Routing Problem hard solve?
 
@@ -47,13 +47,13 @@ The following sequence diagram shows the common use case, a user creating a rout
 The diagram contains all microservices (the top 7 boxes) and also presents all the system interactions highlighted in red. 
 The subsequent subsections discuss in detail each of the steps. 
 
-![Logical Design](imgs/sequence-diagram.png)
+![Logical Design](/assets/imgs/sequence-diagram.png)
 
 ### Step 1
 
 The user logs into the application. 
 Based on its credentials the `routeForm` web page is presented or not.
-![Step 1](imgs/step1.png)
+![Step 1](/assets/imgs/step1.png)
 
 ### Step 2
 
@@ -61,14 +61,14 @@ The user edits a route.
 In the `RouteWeb` the user can configure the depot params (location and attendance time window) and configure various customer requests (product pickup location, product delivery location, attendance time window, product weight, and service time). 
 The service `RouteWeb` calls the `AddressService` to fetch the latitude and longitude for each location. 
 When the route is saved, `RouteWeb` calls the `RouteService` to persist the route in the database.
-![Step 2](imgs/step2.png)
+![Step 2](/assets/imgs/step2.png)
 
 ### Step 3
 
 The user clicks on "Generate Itinerary" so that `RouteWeb` calls the `RouteService` to request the generation.
 This process can take some time to be done, so `RouteService` gather all information recorded in Step 2 and asynchronously calls the `OrchestratorService` to generate an itinerary. 
 A response is sent back to the user from `RouteService` informing the generation is _InProgress_.
-![Step 3](imgs/step3.png)
+![Step 3](/assets/imgs/step3.png)
 
 ### Step 4
 
@@ -83,7 +83,7 @@ If a user requests to see the itinerary before it has been generated, a blank ma
 ### Step 6
 
 If the user requests to see the itinerary after it has been generated, then the itinerary details are presented in a table and also the routes are drawn on a map.
-![Step 6](imgs/step6.png)
+![Step 6](/assets/imgs/step6.png)
 
 ## AWS Serverless
 
@@ -104,7 +104,7 @@ When a Lambda function is idle waiting for a synchronous response new requests t
 
 For each microservice, the following diagram presents how the services are organized and which components were used for each one.
 
-![Serverless architecture](imgs/serverless-architecture.png)
+![Serverless architecture](/assets/imgs/serverless-architecture.png)
 
 For the `RouteWeb` it was chosen the S3 and CloudFront as the solution to enable fine-grained control about the components. 
 As development framework it was decided to use React and AWS Amplifier libs.
