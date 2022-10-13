@@ -468,8 +468,8 @@ The logs below show the cold-start issue, notice the amount of time taken to ini
 ![Route Lambda Cold Start problem](/assets/imgs/route-service-spring-cold-start-issue.png)
 
 This service integrates with a couple of AWS services.
-It persists data into DynamoDB and send messages to `OptimizerService` by persisting the route JSON files into S3 and notifying the `OrchestratorService` through SNS.
-All these integrations are done using AWS SDK and permissions to the services are granted through an single AWS Role linked to this function.
+It persists data into DynamoDB and sends messages to `OptimizerService` by persisting the route JSON files into S3 and notifying the `OrchestratorService` through SNS.
+All these integrations are done using AWS SDK and permissions to the services are granted through a single AWS Role linked to this function.
 The image below gives a general glance about the function.
 
 ![AWS Route Lambda](/assets/imgs/aws-route-lambda.png)
@@ -494,17 +494,20 @@ The image below gives a general glance about the function.
 ### E2E flow
 - Example of user-view E2E flow through simple video
 - Example of tech-view E2E flow through diagrams
+
 ### Spring Lambda performance
 - Average response time (different loads 10, 20, 50 Gatling)
 - Huge cold start issue
 - Average response time without cold start
 - Memory consumption
 - Future migration a new stack as the MVP was proved functional, not performant (maybe quarkus or go)
+
 ### Quarkus Lambda performance
 - Average response time (different loads 10, 20, 50 Gatling)
 - Small cold start issue
 - Average response time without cold start
 - Memory consumption
+
 ### General integrated performance 
 - Total time to optimize simple route (20 requests - 40 nodes)
 - Total time to optimize simple route (100 requests - 200 nodes)
