@@ -431,15 +431,50 @@ The general system architecture for the `AddressService` is composed of an AWS A
 The API Gateway communicates to Cognito to authorize the front-end requests using the JWT token sent through the `Authorization` header.
 The AWS Lambda function is developed using the JavaScript plataform because the function is quite small and simple and we require a fast cold-start.
 
-### Route back-end
-- Example of request and response
-- Spring for lambda (Handler, IoC), design choice due to experience
-- DynamoDB as database (400kb limit, maybe need a new strategy in the future, e.g.: S3)
-- API Gateway (dynamic path mapping and CORS)
-- Tests with dynamoDB
-- Deploy with GitHub
-- Local tests using SAM
-### Optimizer back-end
+### Route Service
+
+The `RouteService` was designed to enable users to configure routes and serve them as a facade for the `OptimizerService`.
+Its main responsabilities are: 
+
+1. persist routes for users in durable storage
+2. run business validations before saving a route
+3. invoke the optimizer service passing only the required information
+4. provide well-formatted itinerary details
+5. restrict user access so they can only see their owned routes
+
+In terms of persistence it was chosen DynamoDB as the `RouteService` database.
+The main motivation was due to its pay for what you use.
+This way I don't need to pay for a running RDS instance when the service is idle.
+
+The route table was modeled to enable schema flexibility and quick retrieval of user's routes, the database model is presented in the image below. 
+The `ID` attribute is a random UUID value to minimize hot-partitioning issues. 
+The attributes `createdAt`, `createdBy`, and `email` are used to associate routes to users and for quick search and recovering (these attributes are indexed). 
+Finally, `depot` and `requests` are JSON objects with the details about the route created by the user, this information later on sent to the `OptimizerService`.
+
+![Route DynamoDB schema](/assets/imgs/route-dynamodb-schema.png)
+
+For a while the current schema is not being an issue in terms of storage capacity (400KB max record size), but in the future we may need a different strategy using S3 to persist routes if this limit is not enough anymore.
+
+The same way as the `AddressService`, the `RouteService` runs on top of AWS Lambda.
+This was the design decision to save costs and pay only for what we use.
+The function is also served through API Gateway that authorizes the requests by validating the JWT token with Cognito.
+
+The tech-stack chosen for this service was mainly Spring-Boot.
+This decision was taken due to the experience with the framework and also because it was possible to reuse the code from a previous project.
+However, this service is strugling with cold starts, spring takes around 10 seconds to start serving requests for this service.
+For the long term it's being considered to migrate the service to either Quarkus Native or GoLang.
+The logs below show the cold-start issue, notice the amount of time taken to initialize the function (~8.4 seconds).
+
+![Route Lambda Cold Start problem](/assets/imgs/route-service-spring-cold-start-issue.png)
+
+This service integrates with a couple of AWS services.
+It persists data into DynamoDB and send messages to `OptimizerService` by persisting the route JSON files into S3 and notifying the `OrchestratorService` through SNS.
+All these integrations are done using AWS SDK and permissions to the services are granted through an single AWS Role linked to this function.
+The image below gives a general glance about the function.
+
+![AWS Route Lambda](/assets/imgs/aws-route-lambda.png)
+
+### Optimizer Service
 - Example of request and response
 - Quarkus for lambda (Handler)
 - Native compilation
@@ -447,7 +482,8 @@ The AWS Lambda function is developed using the JavaScript plataform because the 
 - S3 for storing messages
 - Unit testing (future for test containers)
 - Deploy with GitHub
-### Front-end
+
+### Route Web (front-end)
 - React development
 - Ant Design for forms
 - Leaflet for maps
