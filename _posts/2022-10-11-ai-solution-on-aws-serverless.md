@@ -162,7 +162,7 @@ This sequence was defined based on dependencies, the first stack files are execu
 | 8        | API domains   | Creates the api.joaopedroschmitt.click Route53 record to the API gateways from Address and Routes services                                         |
 | 9        | Optimizer     | Creates the optimizer lambda functions and roles, SNS topics and permissions                                                                       |
 
-### Deploying through GitHub Actions
+### GitHub Actions
 
 For this project, a multi-repository approach with the following 5 repository was used: `aws-cloud-infrastructure`, `aws-address-service`, `aws-front-end`, `aws-route-lambda`, and `aws-route-optimizer`.
 With respect to `aws-route-optimizer`, in this specific case, the repository is a mono-repo managing the microservices `OrchestratorService`, `DistanceService` and `SolverService` all together because they share the same logical domain and Quarkus Native infrastructure.
@@ -300,7 +300,7 @@ fi
 exit 0
 ```
 
-### Authorisation
+### Authorization Service
 
 As mentioned previously Cognito was used as provider for authentication and authorization.
 The User Poll was configured to allow signup through a local account or through an external identity provider (in this case Google).
@@ -412,11 +412,25 @@ Auth.currentSession().then(res =>
   ...
 ```
 
-### Address back-end
-- Example of request and response
-- Requirement for nodejs
-- API Gateway mapping
-- Code snippet
+### Address Service
+
+The `AddressService` was designed to find geographical coordinates for a given search string.
+When an user is editing a route (Logical Design section, Step 2) every address searched calls the `AddressService` to obtain a list of possible locations and their coordinates.
+The image below presents an example of this use-case for the query "new york".
+
+![Address search](/assets/imgs/search-address-front-end.png)
+
+Behind the scenes `AddressService` calls OpenStreetMap API to obtain location data.
+There are many other external providers of such services, like Google Maps,  besides OpenStreetMaps.
+However, the advantage of OpenStreetMaps is that it's free.
+
+In essence the `AddressService` works as an anti-corruption layer between the front-end and the external provider.
+It basically protects the frond-end from re-work in case we decide to change the external provider as long as the response from the provider can be transformed to the same format.
+
+The general system architecture for the `AddressService` is composed of an AWS API Gateway integrated to Cognito and Lambda. 
+The API Gateway communicates to Cognito to authorize the front-end requests using the JWT token sent through the `Authorization` header.
+The AWS Lambda function is developed using the JavaScript plataform because the function is quite small and simple and we require a fast cold-start.
+
 ### Route back-end
 - Example of request and response
 - Spring for lambda (Handler, IoC), design choice due to experience
