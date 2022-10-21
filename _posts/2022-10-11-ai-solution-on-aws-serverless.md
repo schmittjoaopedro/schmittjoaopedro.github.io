@@ -475,6 +475,29 @@ The image below gives a general glance about the function.
 ![AWS Route Lambda](/assets/imgs/aws-route-lambda.png)
 
 ### Optimizer Service
+
+The `SolverService` is the most complex of all the services.
+It implements an AI solution to find the best itinerary for a given route (see Section Vehicle Routing Problem for more details).
+The original implementation of the Solver was made in Java, and because Java is a not good fit for Lambda functions, it was decided to go for Quarkus Native as it provides smaller startup times, less memory consumption, and it wouldn't require to rewrite the whole solver (that's pretty big).
+AWS Lambda functions don't support Quarkus Native executions by default, so a custom Lambda extension was required $^3$.
+You can see details about how to develop and deploy Quarkus Native to AWS using Github Actions [here](https://schmittjoaopedro.github.io/jekyll/update/2022/09/30/quarkus-native-aws-lambda-github-actions.html).
+
+The trade-off with Quarkus Native and other languages is its compilation time, it takes a few minutes to generate the final binary and therefore requires more computation during the build.
+However, once the build is done and deployed, Quarkus Native in Lambda functions quite well. They have a small initalization time and are very efficient in terms of memory consumption.
+The image below shows the details for a single lambda execution of the solver.
+Notice the total time required to instantiate the whole solver too less than 300ms and the whole execution consumed 325MB of memory.
+In this image you can see the log details of the solving process, every time a new best solution (a.k.a. itinerary) is found it's reported in the logs, this search process is very CPU and memory heavy.
+Due to this reason the `SolverService` lambda function was set to use 1.7GB of memory RAM that gives the lambda function a complete CPU to process the code.
+For this solver algorithm we don't benefit from parallel execution, so we don't need more CPUs.
+
+![AWS Lambda Quarkus Native](/assets/imgs/aws-quarkus-native-lambda-execution.png)
+
+The othe `OrchestratorService` and `DistanceService` run simpler algorithms than the `SolverService`, and therefore require less resources. 
+The following image shows the logs for the `DistanceService` after responding a request to calculate the distance matrix for a route.
+You can see from this execution that the initalization time was around the same as the previous `SolverService` however it consumed less memory due to its simpler logic, around 80MB.
+
+![Distance AWS Lambda Quarkus Native](/assets/imgs/distance-aws-quarkus-native-lambda-execution.png)
+
 - Example of request and response
 - Quarkus for lambda (Handler)
 - Native compilation
@@ -519,3 +542,5 @@ The image below gives a general glance about the function.
 [1] Wikipedia - Vehicle Routing Problem. Available at: https://en.wikipedia.org/wiki/Vehicle_routing_problem
 
 [2] TERMHIGEN-A Hybrid Metaheuristic Technique for Solving Large-Scale Vehicle Routing Problem with Time Windows. Available at: https://www.researchgate.net/figure/Description-of-a-Multi-Node-Vehicle-Routing-Problem-35_fig1_331408676
+
+[3] Quarkus Native on AWS Lambda functions. Available at: https://quarkus.io/guides/amazon-lambda
