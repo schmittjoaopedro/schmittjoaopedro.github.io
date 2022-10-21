@@ -499,8 +499,10 @@ You can see from this execution that the initalization time was around the same 
 ![Distance AWS Lambda Quarkus Native](/assets/imgs/distance-aws-quarkus-native-lambda-execution.png)
 
 All the three services that compose the `OptimizationService` communicate asynchronously through messages.
-It was decided to use SNS as the main tool for this communication because it doesn't require to configure a pooling resource to get messages (like in SQS), so it's cheaper in this sense.
+It was decided to use SNS as the main tool for this communication because it doesn't require to configure any frequent pooling to fetch the messages (like in SQS), so in theory we should expend less money.
 Also the SNS was combined with S3 to send the payload from point A to B, this was necessary because SNS only supports messages up to 256Kb, and most of the payloads overpass this limit.
+The way it works is like this, every time a service A wants to send a message to another service B, it first persists the message under a S3 key prefix value equal to the route ID to be optimized. 
+Then service A sends as part of the SNS message body the payload file path from the S3 bucket. When service B receives the notification, it fetches the content by opening up the payload from the given path in S3.
 
 ### Route Web (front-end)
 - React development
