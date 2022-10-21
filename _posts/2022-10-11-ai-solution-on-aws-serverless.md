@@ -504,36 +504,34 @@ Also the SNS was combined with S3 to send the payload from point A to B, this wa
 The way it works is like this, every time a service A wants to send a message to another service B, it first persists the message under a S3 key prefix value equal to the route ID to be optimized. 
 Then service A sends as part of the SNS message body the payload file path from the S3 bucket. When service B receives the notification, it fetches the content by opening up the payload from the given path in S3.
 
-### Route Web (front-end)
-- React development
-- Ant Design for forms
-- Leaflet for maps
-- Front-end authorisation using Amplify (hidden menus)
+## General Performance Analysis
 
-## General Results
+### Address Service Performance
 
-### E2E flow
-- Example of user-view E2E flow through simple video
-- Example of tech-view E2E flow through diagrams
-
-### Spring Lambda performance
 - Average response time (different loads 10, 20, 50 Gatling)
-- Huge cold start issue
+- Percentile
+- Cold start issue
 - Average response time without cold start
 - Memory consumption
-- Future migration a new stack as the MVP was proved functional, not performant (maybe quarkus or go)
+- Number of lambda functions instantiated
 
-### Quarkus Lambda performance
+### Route Service Performance
+
 - Average response time (different loads 10, 20, 50 Gatling)
-- Small cold start issue
+- Percentile
+- Cold start issue
 - Average response time without cold start
 - Memory consumption
+- Number of lambda functions instantiated
 
-### General integrated performance 
-- Total time to optimize simple route (20 requests - 40 nodes)
-- Total time to optimize simple route (100 requests - 200 nodes)
-- Total time to optimize simple route (200 requests - 400 nodes)
-- Total time to optimize simple route (300 requests - 600 nodes)
+### Optimizer Service Performance
+
+- Average response time (different loads 10, 20, 50 Gatling)
+- Percentile
+- Cold start issue
+- Average response time without cold start
+- Memory consumption
+- Number of lambda functions instantiated
 
 ## References
 
