@@ -508,12 +508,66 @@ Then service A sends as part of the SNS message body the payload file path from 
 
 ### Address Service Performance
 
-- Average response time (different loads 10, 20, 50 Gatling)
-- Percentile
-- Cold start issue
-- Average response time without cold start
-- Memory consumption
-- Number of lambda functions instantiated
+The `AddressService` is a AWS Lambda Function written in Java Script as already explained in the previous sections.
+In order to validate it's performance and scalability, a load test was conducted.
+The Gatling test framework was used for this task and the details of the simulation can be seen at the snippet below.
+
+```scala
+class AddressServiceSimulation extends Simulation {
+
+  val feeder = csv("data/search.csv").random
+
+  val search = {
+    feed(feeder)
+      .exec(
+        http("Search Address")
+          .get("/addresses")
+          .queryParam("q", "#{searchCriterion}")
+          .check(
+            status.is(200),
+            jsonPath("$[*].id").count.gt(0)
+          )
+      )
+  }
+
+  val httpProtocol = http.baseUrl(Configuration.apiURL)
+      .authorizationHeader(Configuration.accessToken)
+
+  var users = scenario("Users").exec(search)
+
+  setUp(
+    users.inject(
+      constantUsersPerSec(10).during(5.minutes)
+      //constantUsersPerSec(50).during(5.minutes)
+      //constantUsersPerSec(100).during(5.minutes)
+    )
+  )
+  .protocols(httpProtocol)
+  .assertions(
+    global.successfulRequests.percent.gt(99)
+  )
+}
+```
+
+This test scenario queries the `AddressService` by passing different query values, and expects the response to be sucessfull.
+The system was stressed up until the point it started to fail, it happened when the simulation reached 100 users per second.
+You can see at the image below that roughly 3% of all requests failed with 500 status code.
+
+![Address Load Test 1](/assets/imgs/ai-servless-address-load-test-1.png)
+
+Also, in terms of performance perceived by the user, it can be seeing at the graph below that 95% of all requests stayed under 700ms to get a response from the server (including network round-trips between Portugal and Ireland).
+Lambda functions take some time to start responding requests, it's known as cold-start issue, it can be seeing at the beginning of the graph where there's a small spike on the response times.
+
+![Address Load Test 2](/assets/imgs/ai-servless-address-load-test-2.png)
+
+The failed requests observed above were probably affected by the Throttling applied during the simulation (the graph below shows around 180 throttles).
+Looking at the "Response Time Distribution" at the graph above it can be seeing that it takes less than 200ms to fail a request, that's coherent with the throttling type of error where the request is blocked off before getting to the back-end service.
+In terms of resources consumption it can be seeing that around 50 lambda functions were instantiated to hold the load.
+It reasons with the observed time of ~600ms, as within each second we have 100 users making requests to the back-end, it takes roughly one lambda function to respond two users.
+
+![Address Load Test 3](/assets/imgs/ai-servless-address-load-test-3.png)
+
+This service is quite performant and scalable given we reached it's limitation by a throttling configuration that could be increased to enable more load.
 
 ### Route Service Performance
 
