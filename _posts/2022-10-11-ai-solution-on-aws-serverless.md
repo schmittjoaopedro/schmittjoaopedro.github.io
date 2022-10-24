@@ -652,12 +652,89 @@ As already mentioned, DynamoDB was limited to 6 reqs/sec, therefore we suppose i
 
 ### Optimizer Service Performance
 
-- Average response time (different loads 10, 20, 50 Gatling)
-- Percentile
-- Cold start issue
-- Average response time without cold start
-- Memory consumption
-- Number of lambda functions instantiated
+The `OptimizerService` is responsible for running the AI Solver that finds the best itinerary possible for a given route.
+This service is composed of three micro-services that communicate asynchronously through SNS.
+To load test this service, we decided to use Gatling to bulk send messages to `OrchestratorService`.
+We didn't request the optimization through `RouteService` to prevent any skewed results from the poor performance of `RouteService` observed from the previous experiment.
+Because Gatling doesn't support AWS protocols natively, we only used the framework to bulk load the messages into AWS and not to generate the reports.
+The snippet of code below shows how this was achieved.
+
+```scala
+class OptimizerServiceSimulation extends Simulation {
+
+  val fileContent = Source
+    .fromResource("data/optimizer-request.json")
+    .mkString
+
+  val s3Client = S3Client
+    .builder()
+    .httpClient(UrlConnectionHttpClient.builder().build())
+    .build()
+
+  val snsClient = SnsClient
+    .builder()
+    .httpClient(UrlConnectionHttpClient.builder().build())
+    .build()
+
+  val search = {
+    exec { session =>
+      val routeId = UUID.randomUUID().toString()
+
+      // Upload message to S3
+      s3Client.putObject(PutObjectRequest
+          .builder()
+          .bucket("schmittjoaopedro-click-route-planner-optimizer")
+          .key(s"""${routeId}/optimizer-orchestrator-request.json""")
+          .build(),
+          RequestBody.fromString(fileContent.replaceAll("#route_id#", routeId))
+        )
+
+      // Request optimization through SNS
+      val attributes = new util.HashMap[String, MessageAttributeValue]()
+      attributes.put("routeId", MessageAttributeValue.builder()
+        .dataType("String")
+        .stringValue(routeId)
+        .build())
+      attributes.put("messageType", MessageAttributeValue.builder()
+        .dataType("String")
+        .stringValue("optimizer-orchestrator-request")
+        .build())
+      snsClient.publish(PublishRequest
+          .builder()
+          .message(s"""${routeId}/optimizer-orchestrator-request""")
+          .topicArn(Configuration.topicArn)
+          .messageAttributes(attributes)
+          .build()
+        )
+
+      session
+    }
+  }
+
+  val httpProtocol = http.baseUrl(Configuration.apiURL)
+      .authorizationHeader(Configuration.accessToken)
+
+  var users = scenario("Users").exec(search)
+
+  setUp(
+    users.inject(
+      //atOnceUsers(10)
+      //atOnceUsers(100)
+      atOnceUsers(1000)
+    )
+  )
+  .protocols(httpProtocol)
+}
+```
+
+From the `OrchestratorService`, the service that communicates with `DistanceService` and `SolverService`, hence requires more throughput to support all communication overload, we can see the main metrics collected from AWS in the image below.
+This graph is showing the results obtained from the simulation with 1000 thousand optimization requests.
+These graphs aren't granular enough to get precise information about the metrics, but from there we can afirm that more than 2k invocations happened to this service during the period of 5 minutes.
+Some throttling was also recorded, but we didn't find any itinerary missing by analysing the final messages sent out from the `OrchestratorService`.
+SNS implements a retry policy, it means that when Lambda throttles, SNS service backs off for some time and try again later until it succeeds or reaches the maximum number of retries.
+In this case, the service was capable to deal with a load of 1K messages during 5 minutes, that corresponds to 3 requests per second.
+
+![Optimizer Service](/assets/imgs/ai-serverless-optimizer-test-1000.png)
 
 ## References
 
