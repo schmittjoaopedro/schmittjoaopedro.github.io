@@ -571,12 +571,84 @@ This service is quite performant and scalable given we reached it's limitation b
 
 ### Route Service Performance
 
-- Average response time (different loads 10, 20, 50 Gatling)
-- Percentile
-- Cold start issue
-- Average response time without cold start
-- Memory consumption
-- Number of lambda functions instantiated
+The `RouteService` project is responsible for owing the flow of recording new routes for optimization.
+As mentioned previously it was developed in Spring Boot as per the official documentation.
+The goal of this performance test was to validate the complete end-to-end composed by route creating, listing and loading by its ID.
+The following code snippets present the script developed in Gatling to run these simulations.
+
+```scala
+class RouteServiceSimulation extends Simulation {
+
+  val feeder = csv("data/address.csv").random
+
+  var create = feed(feeder)
+      .exec(
+        http("Create Route")
+          .post("/routes/create")
+          .header("Content-Type", "application/json;charset=UTF-8")
+          .body(RawFileBody("#{payloadPath}"))
+          .check(
+            status.is(200),
+            jsonPath("$.id").saveAs("routeId")
+          )
+      )
+      .exec(
+        http("Find all Routes")
+          .get(s"""/routes/createdby/${Configuration.userId}""")
+          .check(
+            status.is(200),
+            jsonPath("$[*].id").count.gt(0)
+          )
+      )
+      .exec(
+        http("Find Route by ID")
+          .get("/routes/find/#{routeId}")
+          .check(
+            status.is(200),
+            jsonPath("$.id").is("#{routeId}")
+          )
+      )
+
+  val httpProtocol = http.baseUrl(Configuration.apiURL)
+      .authorizationHeader(Configuration.accessToken)
+
+  val users = scenario("Users").exec(create)
+
+  setUp(
+    users.inject(
+      //constantUsersPerSec(1).during(5.minutes)
+      //constantUsersPerSec(2).during(5.minutes)
+      constantUsersPerSec(4).during(5.minutes)
+    )
+  )
+  .protocols(httpProtocol)
+  .assertions(global.successfulRequests.percent.gt(99))
+}
+```
+
+Because this service was developed using the standard Spring Boot framwork, we expected it to struggle more to scale due to its slow startup time.
+Therefore we started the simulations by setting a lower bar for the load parameters.
+The graph below presents the results for the simulation with 4 users per second.
+
+![Route Service Load](/assets/imgs/ai-serverless-route-test-1.png)
+
+In terms of errors, we can see that around 1% of all requests failed, we didn't dig deep enough to prove the root cause, but we suspect from cold-start as currently the service takes ~16sec to start.
+It means that receiving a load of 4 users per second during 16 secs yields 64 concurrent lambda functions until the first request is served.
+DynamoDB was configured to 50 WCU, it means it supports at maximum 50KB of writting data per second, because each create request saves around 8KB of data, the current configuration supports a peek of ~6 requests per second.
+Therefore we hyphotesize that at some point DynamoDB throttled some connections and caused the seeing errors.
+However, CloudWatch didn't report any throttling on DynamoDB size but we saw some on the Lambda side.
+Maybe collection wasn't granular enough to see the throttling on DynamoDB side.
+The following graph shows the metrics collected during the simulation from CloudWatch.
+
+In terms of performance, we can cleary see the impact of cold start by looking at all graphs from the previous image. 
+The 95th percentile for the first request was less than 1sec and the 99th percentile was around 17secs.
+We can better see the time taken to warm up the Lambda function at the graph "Response Time Percentiles" where the first 20 seconds of the simulation take more time to start responding requests.
+This shows that the first requests to hit the lambda function were queued until a response was computed (number of active users almost hit 60).
+The side effect is a bunch of lambda functions being created just to deal with the cold-start, and once the load was handled, the number of lambda functions start decreasing to the expected rate of ~5 users per second.
+It's interesting to note that Lambda was able to couple with the cold start by dynamically instantiating more functions, but unfortunately all queued users spilled over to DynamoDB when all these users started write data.
+As already mentioned, DynamoDB was limited to 6 reqs/sec, therefore we suppose it wasn't able to couple with the load and then throttled some of the requests.
+
+![Route Service Load](/assets/imgs/ai-serverless-route-test-2.png)
 
 ### Optimizer Service Performance
 
