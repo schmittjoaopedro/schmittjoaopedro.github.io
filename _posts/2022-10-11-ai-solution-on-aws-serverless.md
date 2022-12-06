@@ -13,6 +13,8 @@ First, I want to share my experience developing an AI system using only AWS serv
 Secondly, I want to share the general performance of AWS Lambda in terms of running a CPU-intensive AI solver developed with Quarkus Native.
 And thirdly, I want to share my experience in developing all the infrastructure as code using CloudFormation and automating all CI/CD with GitHub Actions.
 
+Project link: https://joaopedroschmitt.click
+
 ## Vehicle Routing Problem
 
 The vehicle routing problem (VRP) is a combinatorial optimization problem which asks "What is the optimal set of routes for a fleet of vehicles to traverse in order to deliver goods to a given set of customers?" $^1$. 
