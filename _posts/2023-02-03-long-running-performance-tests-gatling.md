@@ -7,13 +7,11 @@ categories: jekyll update
 
 ## Motivation
 
-* Problem
-  * Production spikes
-  * Incidents
-* Goal
-  * Simulate production workloads
-  * Framework to assess the impact of new changes
-  * Estimate performance gains
+The goal of this article is to share some of my experience developing performance tests using Gatling to simulate production-like behavior to troubleshoot application behavior and also assess performance improvement gains.
+
+The idea of these performance tests started when it was spotted scalability issues for a Quarkus micro-service application during an unexpected increase of requests per second. The unexpected load caused requests to be dropped, and the requirement was to find a way to proactively prevent those incidents by being prepared in certain level for an increase load on the service.
+
+Another benefit of this work was to be able to assess performance gains when doing code and infrastructure improvements for the application, by quantitatively comparing the error reduction rate and response time improvements for our test scenarios.
 
 ## Gatling
 
@@ -25,6 +23,7 @@ categories: jekyll update
 * Spikes modeling during specific times
 * Load Factor
 * Duration
+* Test environment
 
 ## Setting up execution on Jenkins
 
