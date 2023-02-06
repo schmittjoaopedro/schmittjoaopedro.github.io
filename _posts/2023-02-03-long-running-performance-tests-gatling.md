@@ -13,10 +13,9 @@ The idea of these performance tests started when it was spotted scalability issu
 
 Another benefit of this work was to be able to assess performance gains when doing code and infrastructure improvements for the application, by quantitatively comparing the error reduction rate and response time improvements for our test scenarios.
 
-## Gatling
-
 ## Modeling production load on Gatling
 
+* Gatling
 * Example samples extracted from logs
 * Difficult to handle optional variables
 * Steady requests per second modelling during the day
