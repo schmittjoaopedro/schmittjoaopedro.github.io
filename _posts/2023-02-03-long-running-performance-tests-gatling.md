@@ -125,7 +125,7 @@ def scaleLoad(load: Int): Int = {
 }
 ```
 
-* Test environment
+All these tests were designed to run against a micro-service architecture running in an AWS EKS cluster and Aurora Postgres RDS.
 
 ## Setting up execution on Jenkins
 
