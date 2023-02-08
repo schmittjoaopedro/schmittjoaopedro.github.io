@@ -99,8 +99,32 @@ val getRequestHttp = feed(feederGetRequest)
 
 A drawback of the current Gatling feeder solution is that we can't have optional parameters in a feeder. For example, if you want `header2` to be optional by setting empty values in the CSV file and not sending it as part of the request, it's not possible. It means that your service has to be able to ignore empty headers. Otherwise, it'll incur extra complexity for designing your test cases (see [SO question](https://stackoverflow.com/questions/74960360/how-to-avoid-sending-null-headers-in-gatling-http-request)).
 
-* Load Factor
-* Duration
+As you might have noticed, the above code used two functions `scaleLoad` and `scaleTime` when setting up the simulation. These functions work in pair with the below properties:
+
+```scala
+val durationMinutes = System.getProperty("durationMinutes", "60")
+val loadFactor = System.getProperty("loadFactor", "1")
+```
+
+These properties enable you to run tests in different setups. For example, you can run the same load scenario for 1 hour or 24 hours by passing those values in minutes through parameters like: `--define durationMinutes=60`. You can vary the test load by multiplying the scenario configuration by a factor. For example, to run the same scenario with twice the load you have to set the parameter `--define loadFactor=2.0` when running the program. The source code in Gatling used to scale these values is provided below:
+
+```scala
+def scaleTime(time: FiniteDuration): FiniteDuration = {
+  val daySeconds: Double = 86400.0
+  val durationSeconds: Double = new FiniteDuration(durationMinutes.toLong, TimeUnit.MINUTES).toSeconds.toDouble
+  val unscaledTimeSeconds: Double = time.toSeconds.toDouble
+  val scaledTimeSeconds: Double = (durationSeconds / daySeconds) * unscaledTimeSeconds
+  val newTime = new FiniteDuration(scaledTimeSeconds.toLong, TimeUnit.SECONDS)
+  newTime
+}
+
+def scaleLoad(load: Int): Int = {
+  val factor: Double = loadFactor.toDouble
+  val newLoad = (load * factor).ceil.toInt
+  newLoad
+}
+```
+
 * Test environment
 
 ## Setting up execution on Jenkins
