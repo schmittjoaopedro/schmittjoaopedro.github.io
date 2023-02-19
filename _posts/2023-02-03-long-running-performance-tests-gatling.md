@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Executing long running performance tests with Gatling to simulate production workloads"
+title:  "Executing long running performance tests with Gatling to optimize your production workloads"
 date:   2023-02-03 12:00:00 +0100
 categories: jekyll update
 ---
