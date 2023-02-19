@@ -7,21 +7,19 @@ categories: jekyll update
 
 ## Motivation
 
-The goal here is to share some experience developing performance tests using Gatling to simulate production-like load. So we can troubleshoot application behavior and assess performance improvement gains.
-
-The idea of these performance tests started when it was faced scalability issues for a micro-service application during an unexpected increase of requests per second, causing some requests not being responded. The main requirement was to find a way to validate if infrastructure changes would reflect in a response error ratio reduction.
-
-Another benefit of this work was the creation of a methodology to assess performance gains when doing code and infrastructure improvements for the application, so we could quantitatively compare error reduction rates and response time improvements for various test scenarios.
+The goal of this article is to share some experience developing performance tests using Gatling to simulate production-like load in a way you can access critical system's scalability, resilience and performance when under peak load times.
+It'll be presented technical aspects on how you can automatize your performance tests using Jenkins pipelines, and also how you can structure your performance test experiments to fine tune your application.
 
 ## Modeling system's load on Gatling
 
-Gatling was the chosen tool for developing these performance tests. The reason for this decision was its simple API, the efficient thread management mechanism, and the quality of the reports generated.
+Gatling is a good tool for developing performance tests. It provides a simple API, efficient thread management mechanism for managing requests under simulation, and can generate reports with very good quality.
+When accesing the performance of your system using such a tool, the first step to take is understand how you can simulate the same load that your system receives in production using Galting. There are probably many ways of doing this out there, but the way I'll provide here depends on metrics history collected from your system.
 
-To model the system operation load in Gatling, we started by understanding the usual load curve observed during a normal day of operations. This information was extracted from Grafana by looking at the requests per second (RPS) metric. Below is presented a fictional example:
+To start of modelling the system's received load in Gatling, we start by understanding the usual load curve observed within a normal day of operations. This information can be extracted from many tools (e.g.: Grafana) by looking at the requests per second (RPS) metric. Below is presented a fictional example:
 
 ![Load Grafana](/assets/imgs/gatling-load-grafana.png)
 
-With this information in hands, we modeled the observed curve to a discrete table by separating the general smooth load increases and decreases from the spikes. This table facilitates configuring Gatling through its API functions (see the snippet below the table).
+With this information in hands, you can start modelling the observed curve to a discrete table by separating the general smooth load increases and decreases from the spikes. This table facilitates configuring Gatling through its API functions (see the snippet below the table).
 
 | Time          | Load                      |
 |---------------|---------------------------|
@@ -76,7 +74,7 @@ setUp(
 // We don't assert tests to prevent the pipeline from failing and not extracting the reports
 ```
 
-To create a representative set of requests, we defined a feeder file with 20 different combinations of parameters and passed it into the `getRequest` method. This strategy forces requests to pass randomly through various parts of the source code, avoiding the service from optimizing for a single shape of request. We extracted these different combinations by sampling requests from Kibana logs.
+To create a representative set of requests that will be used to emulate your load curve when under tests, you can define a feeder file with various different combinations of parameters and pass it before the `exec` method. This strategy forces requests to pass randomly through various parts of the source code, avoiding the service from optimizing for a single shape of request. Sometimes you can extract these different combinations by sampling requests from Kibana logs.
 
 ```scala
 val feederGetRequest = csv("request_variations.csv").random
@@ -97,7 +95,7 @@ val getRequestHttp = feed(feederGetRequest)
     )
 ```
 
-A drawback of the current Gatling feeder solution is that we can't have optional parameters in a feeder. For example, if you want `header2` to be optional by setting empty values in the CSV file and not sending it as part of the request, it's not possible. It means that your service has to be able to ignore empty headers. Otherwise, it'll incur extra complexity for designing your test cases (see [SO question](https://stackoverflow.com/questions/74960360/how-to-avoid-sending-null-headers-in-gatling-http-request)).
+A drawback of the current Gatling feeder solution is that you can't have optional parameters in a feeder. For example, if you want `header2` to be optional by setting empty values in the CSV file and not sending it as part of the request, it's not possible. It means that your service has to be able to ignore empty headers. Otherwise, it'll incur extra complexity for designing your test cases (see [SO question](https://stackoverflow.com/questions/74960360/how-to-avoid-sending-null-headers-in-gatling-http-request)).
 
 As you might have noticed, the above code used two functions `scaleLoad` and `scaleTime` when setting up the simulation. These functions work in pair with the below properties:
 
@@ -106,7 +104,7 @@ val durationMinutes = System.getProperty("durationMinutes", "60")
 val loadFactor = System.getProperty("loadFactor", "1")
 ```
 
-These properties enable you to run tests in different setups. For example, you can run the same load scenario for 1 hour or 24 hours by passing those values in minutes through parameters like: `--define durationMinutes=60`. You can vary the test load by multiplying the scenario configuration by a factor. For example, to run the same scenario with twice the load you have to set the parameter `--define loadFactor=2.0` when running the program. The source code in Gatling used to scale these values is provided below:
+These properties enable you to run tests in different setups. For example, you can run the same load scenario for 1 hour or 24 hours by passing those values in minutes through parameters like: `--define durationMinutes=60`. You can vary the test load by multiplying the scenario configuration by a factor. For example, to run the same scenario with twice the load, you have to set the parameter `--define loadFactor=2.0` when running the program. The source code in Gatling used to scale these values is provided below:
 
 ```scala
 def scaleTime(time: FiniteDuration): FiniteDuration = {
@@ -125,14 +123,13 @@ def scaleLoad(load: Int): Int = {
 }
 ```
 
-All these tests were designed to run against a micro-service architecture running in an AWS EKS cluster and Aurora Postgres RDS.
-
 ## Setting up execution on Jenkins
 
-Both Jenkins and Kubernetes were selected as the main tools for running the performance tests.
-The main reason was to standardize the test platform and minimize potential differences that could appear when running the tests from different developer machines and networks, consequently giving more consistent results across many runs.
+When you are done developing the Gatling simulation, the next step is to find a way to run these tests every time you need to do so.
+For this task, both Jenkins and Kubernetes can be selected as the main tools.
+The main reason for such a selection is that they allow you to standardize the test platform and minimize potential differences that could appear when running the tests from different developer machines and networks, consequently giving more consistent results across many runs.
 
-The general pipeline plan is given below:
+A general pipeline plan to run the tests is given below:
 
 1. The pipeline starts by asking for inputs regarding:
    * The Gatling class to run the simulation;
@@ -219,7 +216,7 @@ pipeline {
                         sh script: """
                             mvn clean gatling:test \
                                 --define gatling.simulationClass=${simulation} \
-                                --define duration=${duration} \
+                                --define durationMinutes=${duration} \
                                 --define loadFactor=${loadFactor} \
                                 --define hostname=${endpoint}
                         """, label: "Running tests"
@@ -242,9 +239,9 @@ pipeline {
 }
 ```
 
-## Optimizing Kubernetes Deployment paramenters
+## Conducting Performance Test Experiments
 
-When running performance tests, a common goal is usually about fine-tuning the application so it can handle more load of requests in a resilient and performant way. Starting from the principle you can model your application load curve as described previously, you are already in a good position to model an experiment and start fine tuning your application.
+When running performance tests a common goal usually is to fine-tune the application so it can handle more load of requests in a resilient and performant way. Starting from the principle you have modelled your application load curve as described previously, you are already in a good position to model an experiment and start fine tuning your application.
 
 Assuming you know what critical parameters you want to optimize for your application (a.k.a.: experiment input), you should start with a baseline run and from there change specific parameters to see which one causes the most impact on your application performance.
 So to measure your application resilience and performance, you also need to define which metrics you are going to use to measure the success of your optimization (a.k.a.: experiment output). In this sense, you can measure whatever you consider being part of a successful application in your context.
