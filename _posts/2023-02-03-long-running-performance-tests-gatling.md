@@ -13,13 +13,13 @@ It'll be presented technical aspects on how you can automatize your performance 
 ## Modeling system's load on Gatling
 
 Gatling is a good tool for developing performance tests. It provides a simple API, efficient thread management mechanism for managing requests under simulation, and can generate reports with very good quality.
-When accesing the performance of your system using such a tool, the first step to take is understand how you can simulate the same load that your system receives in production using Galting. There are probably many ways of doing this out there, but the way I'll provide here depends on metrics history collected from your system.
+When accesing the performance of your system using such a tool, the first step to take is understand how you can simulate the same load that your system receives in production using Gatling. There are probably many ways of doing this out there, but the way I'll provide here depends on metrics history collected from your system.
 
-To start of modelling the system's received load in Gatling, we start by understanding the usual load curve observed within a normal day of operations. This information can be extracted from many tools (e.g.: Grafana) by looking at the requests per second (RPS) metric. Below is presented a fictional example:
+To start off modelling the system's received load in Gatling, we start by understanding the usual load curve observed within a normal day of operations. This information can be extracted from many tools (e.g.: Grafana) by looking at the requests per second (RPS) metric. Below is presented a fictional example:
 
 ![Load Grafana](/assets/imgs/gatling-load-grafana.png)
 
-With this information in hands, you can start modelling the observed curve to a discrete table by separating the general smooth load increases and decreases from the spikes. This table facilitates configuring Gatling through its API functions (see the snippet below the table).
+With this information in hands, you can start modelling the observed curve to a discrete table by separating the general smooth load increases and decreases from the spikes (see the snippet below the table). Later on, this table will facilitate configuring Gatling through its API functions.
 
 | Time          | Load                      |
 |---------------|---------------------------|
@@ -30,6 +30,8 @@ With this information in hands, you can start modelling the observed curve to a 
 | 05:00 - 05:05 | Spike +10 req/sec         |
 | 06:00 - 06:05 | Spike +20 req/sec         |
 | 07:00 - 07:05 | Spike +25 req/sec         |
+
+The following code shows how you can convert the table above to a Gatling simulation.
 
 ```scala
 val getSmooth =
@@ -127,7 +129,7 @@ def scaleLoad(load: Int): Int = {
 
 When you are done developing the Gatling simulation, the next step is to find a way to run these tests every time you need to do so.
 For this task, both Jenkins and Kubernetes can be selected as the main tools.
-The main reason for such a selection is that they allow you to standardize the test platform and minimize potential differences that could appear when running the tests from different developer machines and networks, consequently giving more consistent results across many runs.
+The main reason for such a selection is that they allow you to standardize the test platform and minimize potential differences that could appear when running the tests from different developer machines and networks, consequently giving you more consistent results across many runs.
 
 A general pipeline plan to run the tests is given below:
 
@@ -148,9 +150,9 @@ As a quick note, be aware that running this kind of performance test on Jenkins 
 
 A not mentioned advantage of this strategy is that when your target workload runs in the cloud, and you run the test agent in the same Cloud region (if possible, the same data center), this will give you lower latency variation when making HTTP calls, and hence more consistent results across many runs.
 
-For this strategy, a pending improvement is that for certain high load factors, the single POD agent running the test became saturated with too many requests per second (observed when reaching 800 req/sec). Therefore, the idea for the future is to spread the load across more Gatling PODs to split the maximum number of req/sec.
+For this strategy, a pending improvement is that for certain high load factors, the single POD agent running the test saturates with too many requests per second (I have observed that when reaching 800 req/sec). Therefore, one idea for the future could be to spread the load across more Gatling PODs.
 
-The following code snippet gives an idea of how the pipeline looks like:
+The following code snippet gives an idea of how the pipeline could look like:
 
 ```groovy
 def directory = null;
@@ -181,8 +183,7 @@ pipeline {
                                 name:'simulation',
                                 description: 'Simulation:',
                                 choices:
-                                    "package.FirstSimulation\n" +
-                                    "package.SecondSimulation"
+                                    "package.FirstSimulation"
                             ], [
                                  $class: 'StringParameterDefinition',
                                  name: 'endpoint',
@@ -241,12 +242,12 @@ pipeline {
 
 ## Conducting Performance Test Experiments
 
-When running performance tests a common goal usually is to fine-tune the application so it can handle more load of requests in a resilient and performant way. Starting from the principle you have modelled your application load curve as described previously, you are already in a good position to model an experiment and start fine tuning your application.
+When running performance tests, a common goal usually is to fine-tune the application so it can handle more load of requests in a resilient and performant way. Starting from the principle you have modelled your application load curve as described previously and automatized it using Jenkins, you are already in a good position to model an experiment and start fine tuning your application.
 
 Assuming you know what critical parameters you want to optimize for your application (a.k.a.: experiment input), you should start with a baseline run and from there change specific parameters to see which one causes the most impact on your application performance.
-So to measure your application resilience and performance, you also need to define which metrics you are going to use to measure the success of your optimization (a.k.a.: experiment output). In this sense, you can measure whatever you consider being part of a successful application in your context.
+To allow you to measure your application resilience and performance, you also need to define which metrics you are going to use to define the success of your optimizations (a.k.a.: experiment output). In this sense, you can measure whatever metrics you consider being part of a successful application in your context. It's important to note that when running an experiment all output values are measured from within the time duration the performance test took place.
 
-For illustrating how this experiment would work, the following example depicts a fictional scenario aiming to optimize a standard micro-service with an Auroral SQL database. Important to note that all output values are measured from within the time duration the performance test takes place.
+For illustrating how this experiment would work, the following example depicts a fictional scenario aiming to optimize a standard micro-service communicating to an Auroral SQL DB. 
 
 | Type | Variable | Description | Base value |
 |-|-|-|-|
@@ -277,16 +278,16 @@ When you run the first baseline experiment to get the base outputs (see the tabl
 |Database size, db.r5.xlarge|0.8%|25232|2|652|20%|
 |Min PODs|0.9%|29351|3|517|60%|
 
-By analyzing the table above, if we had to select the two best param optimizations, a reasonable choice would be the *CPU* and *CPU Target* as they reduced the most the error rate. Considering this was the main optimizing goal.
-On the other side, if we focus on optimizing the load on the database side, maybe the best options could be the combination of *CPU* and *Database size*. 
+By analyzing the table above, if we had to select the two best optimization params, a reasonable choice would be the *CPU* and *CPU Target* as they reduced the most the error rate (considering this was the main optimizing goal).
+On the other side, if we were focusing on optimizing the load on the database side, maybe the best options could be the combination of *CPU* and *Database size*. 
 The point is, considering the analysis you are conducting, this table is very helpful because it allows you to trade-off what are the most important decisions you could take considering the current context you are in.
 
 Because this is an iterative process, after you apply the fine-tuning from your experiment's final analysis, you can repeat the same process and keep going this way until you get to a point where the team/company feels comfortable with the decisions made.
 
 ## Conclusions
 
-Critical systems made for scalability in a resilient and performant way are made on top of experimental methods. Like in science we hypothesize, experiment, and draw conclusions, and keep doing this way until we reach a point where the team feels comfortable to release the new version to the wide public.
+Critical systems made for scalability in a resilient and performant way are made on top of experimental methods. Like in science we hypothesize, experiment, and draw conclusions, and keep doing this way until we reach a point where the team feels comfortable to release a new version of the system to the wide public.
 
-Every system has its peculiarities, and one architecture that worked for one project is not a guarantee that it will work for another project. It means that creating tailored experiments for each project brings a lot of value, as you can customize the kind of requests and metrics you analyze that are more important for that system context.
+Every system has its peculiarities, and an architecture that worked for one project doesn't guarantee it will work for another project. It means that creating tailored experiments for each project brings lots of value, as you can customize the requests and metrics that are more important for that system analysis.
 
-Before taking this route, also consider how important it's for your project to reach a certain level of resilience and scalability. Some systems are more critical than others and require more rigor in the decisions made, which means, very simple systems might not go under this experimental path in many cases.
+Before taking this route, also consider how important it's for your project to reach a certain level of resilience and scalability. Some systems are more critical than others and require more rigor in the decisions made, which means, in many cases very simple systems might not go under this experimental path as it can be expensive to conduct for the company.
