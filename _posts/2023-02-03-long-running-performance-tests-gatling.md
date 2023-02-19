@@ -163,12 +163,12 @@ For illustrating how this experiment would work, the following example depicts a
 
 | Type | Variable | Description | Base value |
 |-|-|-|-|
-|Input|CPU|CPU allocated to POD|req/lim: 1000mi|
-|Input|Memory|Memory allocated to POD|req/lim: 2Gi|
-|Input|DB Connection|Size o DB connection pool|200|
+|Input|CPU|CPU allocated to POD|req/lim: 500mi|
+|Input|Memory|Memory allocated to POD|req/lim: 1Gi|
+|Input|DB Connection|Size o DB connection pool|300|
 |Input|CPU Target|HPA Tracked CPU target for auto-scaling|75%|
 |Input|Database size|Size of the Aurora Database|db.r5.large|
-|Input|Min PODs|Minimun number of active PODs|3|
+|Input|Min PODs|Minimun number of active PODs|4|
 |Output|Error Rate|Count of 5XX request responses|-|
 |Output|99th response time|99th percentile time to respond a request|-|
 |Output|Num maximum of PODs|Count peak of running PODs|-|
@@ -182,13 +182,13 @@ When you run the first baseline experiment to get the base outputs (see the tabl
 
 |Scenario|Erro Rate|99th response time|Num maximum of PODs|Max DB Connections|Max DB CPU|
 |-|-|-|-|-|-|
-|Baseline|1%|30232|3|589|50%|
-|CPU, req/lim: 2000mi|0.3%|19232|2|489|45%|
-|Memory, req/lim: 4Gi|1%|30122|3|570|50%|
-|DB Connections, 400|0.8%|28232|3|789|60%|
-|CPU Target, 50%|0.7%|27232|1|719|55%|
-|Database size, db.r5.xlarge|0.8%|25232|2|652|20%|
-|Min PODs|0.9%|29351|3|517|60%|
+|Baseline|1%|3232|3|589|50%|
+|CPU, req/lim: 2000mi|0.3%|1232|2|489|45%|
+|Memory, req/lim: 4Gi|1%|3122|3|570|50%|
+|DB Connections, 400|0.8%|2232|3|789|60%|
+|CPU Target, 50%|0.7%|2232|1|719|55%|
+|Database size, db.r5.xlarge|0.8%|2232|2|652|20%|
+|Min PODs|0.9%|2351|3|517|60%|
 
 By analyzing the table above, if we had to select the two best optimization params, a reasonable choice would be the *CPU* and *CPU Target* as they reduced the most the error rate (considering this was the main optimizing goal).
 On the other side, if we were focusing on optimizing the load on the database side, maybe the best options could be the combination of *CPU* and *Database size*. 
