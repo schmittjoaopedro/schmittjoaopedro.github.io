@@ -1,5 +1,7 @@
 https://schmittjoaopedro.github.io/
 https://schmittjoaopedro.github.io/about/
+https://schmittjoaopedro.github.io/jekyll/update/2023/03/12/creating-unitary-mocked-tests-for-aws-lambda-functions-in-python.html
+https://schmittjoaopedro.github.io/jekyll/update/2023/02/03/long-running-performance-tests-gatling.html
 https://schmittjoaopedro.github.io/jekyll/update/2022/09/30/quarkus-native-aws-lambda-github-actions.html
 https://schmittjoaopedro.github.io/jekyll/update/2022/09/23/migrating-primary-key-to-bigint.html
 https://schmittjoaopedro.github.io/jekyll/update/2021/07/07/jenkins-inbound-agent-docker.html
@@ -19,4 +21,3 @@ https://schmittjoaopedro.github.io/jekyll/update/2017/09/23/ant-colony-optimizat
 https://schmittjoaopedro.github.io/jekyll/update/2017/09/05/automated-testing-in-java-and-nodejs-with-selenium-and-extjs-6-5.html
 https://schmittjoaopedro.github.io/jekyll/update/2017/08/01/genetic-algorithm-clash-royale.html
 https://schmittjoaopedro.github.io/jekyll/update/2017/07/29/word-prediction-with-R.html
-https://schmittjoaopedro.github.io/jekyll/update/2023/02/03/long-running-performance-tests-gatling.html
