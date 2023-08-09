@@ -30,7 +30,7 @@ public class SOQuestionGracefulShutdown {
             }
         }));
 
-        System.out.println("Started send a SIGTERM right after this message using: kill -15 " + ProcessHandle.current().pid());
+        System.out.println("Jobs started, please send a SIGTERM right after this message using: kill -15 " + ProcessHandle.current().pid());
 
         for (; ; ) {
             Thread.sleep(100);
