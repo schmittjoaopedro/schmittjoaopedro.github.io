@@ -62,7 +62,7 @@ Solution highlights:
 
 ## The implementation
 
-The implementation is available in this repo: https://github.com/schmittjoaopedro/email-testing
+The implementation is available in this repo: [https://github.com/schmittjoaopedro/email-testing](https://github.com/schmittjoaopedro/email-testing)
 
 ### Running the project
 
