@@ -49,7 +49,7 @@ def wait_receive_email(recipient, start_time):
 
 The solution proposed here is fully AWS compliant, it uses the following components: SES, S3, Lambda, API Gateway, Parameter Store, and Route 53. The architecture is presented in the diagram below.
 
-![Architecture](assets/EmailTesting.png)
+![Architecture](/assets/imgs/EmailTesting.png)
 
 Solution highlights:
 
