@@ -1,5 +1,6 @@
 https://schmittjoaopedro.github.io/
 https://schmittjoaopedro.github.io/about/
+https://schmittjoaopedro.github.io/jekyll/update/2024/09/25/aws-powered-email-testing.html
 https://schmittjoaopedro.github.io/jekyll/update/2023/03/12/creating-unitary-mocked-tests-for-aws-lambda-functions-in-python.html
 https://schmittjoaopedro.github.io/jekyll/update/2023/02/03/long-running-performance-tests-gatling.html
 https://schmittjoaopedro.github.io/jekyll/update/2022/09/30/quarkus-native-aws-lambda-github-actions.html
